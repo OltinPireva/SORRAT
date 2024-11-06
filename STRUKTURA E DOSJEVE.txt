@@ -1,0 +1,16 @@
+/inventory-system
+    /assets
+        /css
+            - style.css
+        /js
+            - script.js
+    /includes
+        - db.php
+        - header.php
+        - footer.php
+    /pages
+        - index.php
+        - login.php
+        - register.php
+        - inventory.php
+    - .htaccess
