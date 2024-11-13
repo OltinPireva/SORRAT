@@ -1,34 +1,43 @@
 <?php
-include 'includes/db.php';
-
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $username = $_POST['username'];
-    $email = $_POST['email'];
-    $password = password_hash($_POST['password'], PASSWORD_DEFAULT); // Kriptimi i fjalëkalimit
+    $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
 
-    $sql = "INSERT INTO users (username, email, password) VALUES (:username, :email, :password)";
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute(['username' => $username, 'email' => $email, 'password' => $password]);
+    $conn = new mysqli('localhost', 'root', '', 'library');
+    if ($conn->connect_error) {
+        die("Connection failed: " . $conn->connect_error);
+    }
 
-    echo "User registered successfully!";
+    $stmt = $conn->prepare("INSERT INTO users (username, password) VALUES (?, ?)");
+    $stmt->bind_param("ss", $username, $password);
+    
+    if ($stmt->execute()) {
+        echo "<script>alert('Registration successful!'); window.location.href='login.php';</script>";
+    } else {
+        echo "<script>alert('Registration failed: " . $stmt->error . "');</script>";
+    }
+    
+    $stmt->close();
+    $conn->close();
 }
-
 ?>
 
-<?php include 'includes/header.php'; ?>
-
-<h2>Register</h2>
-<form method="POST" action="">
-    <label for="username">Username</label>
-    <input type="text" name="username" required>
-    
-    <label for="email">Email</label>
-    <input type="email" name="email" required>
-    
-    <label for="password">Password</label>
-    <input type="password" name="password" required>
-
-    <button type="submit">Register</button>
-</form>
-
-<?php include 'includes/footer.php'; ?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Register</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h2>Register</h2>
+        <form method="POST">
+            <input type="text" name="username" placeholder="Username" required>
+            <input type="password" name="password" placeholder="Password" required>
+            <button type="submit">Register</button>
+        </form>
+        <p>Already have an account? <a href="login.php">Login here</a>.</p>
+    </div>
+</body>
+</html>
